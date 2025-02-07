@@ -1,6 +1,5 @@
 services:
   app:
-    image: nginx:latest
     build: .
     container_name: tg-app-frontend
     ports:
