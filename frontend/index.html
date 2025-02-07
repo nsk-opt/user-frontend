@@ -4,20 +4,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Главная страница</title>
-  <link rel="stylesheet" href="styles.css">
+  <title>Категории товаров</title>
+  <link rel="stylesheet" href="/styles.css" type="text/css">
 </head>
 
 <body>
-  <div class="container">
-    <h1>Добро пожаловать на главную страницу!</h1>
-    <nav>
-      <ul>
-        <li><a href="/dogs">Собаки</a></li>
-        <li><a href="/dogs/buy">Купить собаку</a></li>
-      </ul>
-    </nav>
+  <div class="header">
+    <h1>Добро пожаловать в наш магазин!</h1>
+    <p>Выберите интересующую категорию:</p>
   </div>
+
+  <div class="categories-container" id="categoriesContainer">
+  </div>
+
+  <script src="src/fetchCategories.js"></script>
 </body>
 
 </html>
