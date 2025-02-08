@@ -1,23 +1,21 @@
 <!DOCTYPE html>
 <html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Категории товаров</title>
+    <link rel="stylesheet" href="/styles.css" type="text/css" />
+    <link rel="stylesheet" href="/category.css" type="text/css" />
+  </head>
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Категории товаров</title>
-  <link rel="stylesheet" href="/styles.css" type="text/css">
-</head>
+  <body>
+    <div class="header">
+      <h1>Добро пожаловать в наш магазин!</h1>
+      <p>Выберите интересующую категорию:</p>
+    </div>
 
-<body>
-  <div class="header">
-    <h1>Добро пожаловать в наш магазин!</h1>
-    <p>Выберите интересующую категорию:</p>
-  </div>
+    <div class="categories-container" id="categoriesContainer"></div>
 
-  <div class="categories-container" id="categoriesContainer">
-  </div>
-
-  <script src="src/fetchCategories.js"></script>
-</body>
-
+    <script type="module" src="/src/script.js"></script>
+  </body>
 </html>
