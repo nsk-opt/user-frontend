@@ -1,7 +1,7 @@
-import { Category } from "./misc/types.js";
-import { handleError } from "./misc/errorHandler.js";
-import { createCategoryCard } from "./misc/createCategoryCard.js";
-import { fetchCategories } from "./fetches/categoryController.js";
+import { Category } from "./misc/types";
+import { handleError } from "./misc/errorHandler";
+import { createCategoryCard } from "./misc/createCategoryCard";
+import { fetchCategories } from "./fetches/categoryController";
 
 function renderCategories(categories: Category[], containerId: string): void {
   const container = document.getElementById(containerId);

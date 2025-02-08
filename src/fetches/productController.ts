@@ -1,4 +1,4 @@
-import { Product } from "../misc/types.js";
+import { Product } from "../misc/types";
 
 export async function fetchProducts(): Promise<Product[]> {
   const response = await fetch("https://azenizzka.ru:8443/api/products");

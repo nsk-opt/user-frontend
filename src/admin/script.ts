@@ -2,15 +2,15 @@ import {
   createCategory,
   fetchCategories,
   updateCategory,
-} from "../fetches/categoryController.js";
+} from "../fetches/categoryController";
 import {
   createProduct,
   fetchProducts,
   updateProduct,
-} from "../fetches/productController.js";
-import { createCategoryCard } from "../misc/createCategoryCard.js";
-import { createProductCard } from "../misc/createProductCard.js";
-import { Category, Image, Product } from "../misc/types.js";
+} from "../fetches/productController";
+import { createCategoryCard } from "../misc/createCategoryCard";
+import { createProductCard } from "../misc/createProductCard";
+import { Category, Image, Product } from "../misc/types";
 
 enum Type {
   CREATE,

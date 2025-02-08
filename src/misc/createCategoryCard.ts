@@ -1,4 +1,4 @@
-import { Category } from "./types.js";
+import { Category } from "./types";
 
 export function createCategoryCard(category: Category): HTMLElement {
   const card: HTMLDivElement = document.createElement("div");

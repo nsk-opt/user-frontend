@@ -1,4 +1,4 @@
-import { Product } from "./types.js";
+import { Product } from "./types";
 
 export function createProductCard(product: Product): HTMLElement {
   const card: HTMLDivElement = document.createElement("div");

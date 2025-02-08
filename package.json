@@ -1,0 +1,16 @@
+{
+  "scripts": {
+    "build": "webpack"
+  },
+  
+  "devDependencies": {
+    "typescript": "latest",
+    "webpack": "latest",
+    "webpack-cli": "latest",
+    "ts-loader": "latest"
+  },
+
+  "files": [
+    "dist/**/*"
+  ]
+}
