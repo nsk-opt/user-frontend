@@ -7,7 +7,10 @@
     "typescript": "latest",
     "webpack": "latest",
     "webpack-cli": "latest",
-    "ts-loader": "latest"
+    "ts-loader": "latest",
+    "css-loader": "latest",
+    "style-loader": "latest",
+    "mini-css-extract-plugin": "latest"
   },
 
   "files": [

@@ -1,13 +1,22 @@
+import "../../frontend/admin/styles.css"
+import "../../frontend/product.css"
+import "../../frontend/category.css"
+import "../../frontend/styles.css"
+
 import {
   createCategory,
   fetchCategories,
   updateCategory,
 } from "../fetches/categoryController";
+
 import {
   createProduct,
   fetchProducts,
+  getCategoriesByProductId,
+  setProductCategories,
   updateProduct,
 } from "../fetches/productController";
+
 import { createCategoryCard } from "../misc/createCategoryCard";
 import { createProductCard } from "../misc/createProductCard";
 import { Category, Image, Product } from "../misc/types";
@@ -91,7 +100,31 @@ function renderCategoryForm(category: Category): void {
   );
 }
 
-function renderProductForm(product: Product): void {
+async function renderProductForm(product: Product): Promise<void> {
+  const categories = await fetchCategories();
+  const toggledCategories: Category[] = await getCategoriesByProductId(
+    product.id
+  );
+
+  let toggledCategoriesId: Array<number> = toggledCategories.map(
+    (product) => product.id
+  );
+
+  const categoriesCheckboxes = categories
+    .map(
+      (category) => `
+      <label class="category-checkbox">
+        <input 
+          type="checkbox" 
+          value="${category.id}" 
+          ${toggledCategoriesId.includes(category.id) ? "checked" : ""}
+        >
+        ${category.name}
+      </label>
+    `
+    )
+    .join("");
+
   content.innerHTML = `
     <div class="edit-form">
       <h2>Редактирование продукта: ${product.name}</h2>
@@ -100,40 +133,34 @@ function renderProductForm(product: Product): void {
           <label for="name">Название:</label>
           <input type="text" id="name" value="${product.name}" required>
         </div>
+
         <div class="form-group">
-          <label for="retailPrice">Розничная цена:</label>
-          <input type="number" id="retailPrice" value="${
-            product.cost.retailPrice
-          }" required>
+          <label>Категории:</label>
+          <div class="categories-container">
+            ${categoriesCheckboxes}
+          </div>
         </div>
-        <div class="form-group">
-          <label for="wholesalePrice">Оптовая цена:</label>
-          <input type="number" id="wholesalePrice" value="${
-            product.cost.wholesalePrice
-          }" required>
-        </div>
-        <div class="form-group">
-          <label for="availability">Наличие:</label>
-          <input type="number" id="availability" value="${
-            product.availability
-          }" required>
-        </div>
-        <div class="form-group">
-          <label for="images">Ссылки на изображения (через запятую):</label>
-          <input type="text" id="images" value="${product.images
-            .map((img: Image) => img.link)
-            .join(", ")}" required>
-        </div>
+
         <button type="submit">Сохранить</button>
+        <button class="delete-button" type="button">Удалить</button>
       </form>
     </div>
   `;
 
   const form = document.getElementById("productForm") as HTMLFormElement;
 
-  form.addEventListener("submit", (e: Event) =>
-    handleProductFormSubmit(e, product)
-  );
+  form.addEventListener("submit", (e: Event) => {
+    e.preventDefault();
+    const checkboxes = Array.from(
+      form.querySelectorAll<HTMLInputElement>('input[type="checkbox"]:checked')
+    );
+
+    toggledCategoriesId = checkboxes.map((checkbox) => Number(checkbox.value));
+
+    console.log(toggledCategoriesId);
+
+    setProductCategories(product.id, toggledCategoriesId);
+  });
 }
 
 async function handleCategoryFormSubmit(

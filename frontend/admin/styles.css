@@ -129,3 +129,7 @@
 .add-button-container.active .add-menu {
   display: block;
 }
+
+.delete-button {
+  background-color: rgb(252, 58, 58);
+}
