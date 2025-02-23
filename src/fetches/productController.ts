@@ -57,21 +57,5 @@ export async function setProductCategories(
   productId: number,
   categoriesIds: number[]
 ) {
-  categoriesIds.forEach(async (categoryId) => {
-    const response = await fetch(
-      "https://azenizzka.ru:8443/api/products/" +
-        productId +
-        "/categories/" +
-        categoryId,
-
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-  });
+//todo
 }

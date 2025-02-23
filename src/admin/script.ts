@@ -102,13 +102,14 @@ function renderCategoryForm(category: Category): void {
 
 async function renderProductForm(product: Product): Promise<void> {
   const categories = await fetchCategories();
-  const toggledCategories: Category[] = await getCategoriesByProductId(
-    product.id
-  );
 
-  let toggledCategoriesId: Array<number> = toggledCategories.map(
-    (product) => product.id
-  );
+  let toggledCategoriesId: number[] = []; 
+  let toggledCategories: Category[] = [];
+
+  if (type === Type.UPDATE) {
+    toggledCategories = await getCategoriesByProductId(product.id);
+    toggledCategoriesId = toggledCategories.map(category => category.id);
+  }
 
   const categoriesCheckboxes = categories
     .map(
@@ -149,7 +150,7 @@ async function renderProductForm(product: Product): Promise<void> {
 
   const form = document.getElementById("productForm") as HTMLFormElement;
 
-  form.addEventListener("submit", (e: Event) => {
+  form.addEventListener("submit", async (e: Event) => {
     e.preventDefault();
     const checkboxes = Array.from(
       form.querySelectorAll<HTMLInputElement>('input[type="checkbox"]:checked')
@@ -159,9 +160,22 @@ async function renderProductForm(product: Product): Promise<void> {
 
     console.log(toggledCategoriesId);
 
-    setProductCategories(product.id, toggledCategoriesId);
+    //todo
+    type === Type.CREATE ? createProduct(product) : updateProduct(product);
+
+    await setProductCategories(product.id, toggledCategoriesId);
+  });
+
+  const deleteButton = form.querySelector(".delete-button") as HTMLButtonElement;
+  deleteButton.addEventListener("click", async () => {
+    const confirmed = confirm("Вы уверены, что хотите удалить этот продукт?");
+    if (confirmed) {
+      console.warn("todo! delete product")
+      // await deleteProduct(product.id);
+    }
   });
 }
+
 
 async function handleCategoryFormSubmit(
   e: Event,
