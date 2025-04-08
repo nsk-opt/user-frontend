@@ -29,7 +29,95 @@ export class CardProcessor {
     }
   }
 
-  isProduct(card: Card) : boolean {
+  async drawProduct(product: Card, container: HTMLDivElement) {
+    try {
+      document.body.innerHTML = ``;
+      container.innerHTML = '';
+      
+      const productElement = await this.renderProductPage(product);
+      container.appendChild(productElement);
+    } catch (error) {
+      console.error('Error:', error);
+      container.innerHTML = `
+        <div class="error-message">
+          Ошибка загрузки данных. Пожалуйста, попробуйте позже.
+        </div>
+      `;
+    }
+  }
+
+  private async renderProductPage(product: Card): Promise<HTMLElement> {
+    const productContainer = document.createElement('div');
+    productContainer.className = 'product-page';
+  
+    const imageUrls = product.imagesIds.map(id => this.api.getImageUrl(id));
+    
+    productContainer.innerHTML = `
+      <div class="product-content">
+        <div class="product-gallery">
+          <div class="main-image-container">
+            <img src="${imageUrls[0]}" alt="${product.name}" class="main-image" loading="lazy">
+          </div>
+          <div class="thumbnails">
+            ${imageUrls.map((url, index) => `
+              <img src="${url}" alt="${product.name} thumbnail ${index + 1}" 
+                   class="thumbnail ${index === 0 ? 'active' : ''}"
+                   data-index="${index}">
+            `).join('')}
+          </div>
+        </div>
+        <div class="product-info">
+          <h1 class="product-title">${product.name}</h1>
+          <div class="product-price">${product.price} ₽</div>
+          <div class="product-meta">
+            <div class="availability ${product.availability && product.availability > 0 ? 'in-stock' : 'out-of-stock'}">
+              ${product.availability && product.availability > 0 ? 'В наличии · ' + product.availability + ' шт.' : 'Нет в наличии'}
+            </div>
+            <button class="order-button" ${!(product.availability && product.availability > 0) ? 'disabled' : ''}>
+              Заказать
+            </button>
+          </div>
+          <div class="product-description">
+            <h3>Описание</h3>
+            <p>${product.description || 'Описание не предоставлено'}</p>
+          </div>
+        </div>
+      </div>
+    `;
+  
+    this.setupImageGallery(productContainer, imageUrls);
+    
+    const orderButton = productContainer.querySelector('.order-button');
+    if (orderButton) {
+      orderButton.addEventListener('click', () => this.handleOrder(product));
+    }
+  
+    return productContainer;
+  }
+  
+  private setupImageGallery(container: HTMLElement, imageUrls: string[]) {
+    const thumbnails = container.querySelectorAll('.thumbnail');
+    const mainImage = container.querySelector('.main-image') as HTMLImageElement;
+  
+    thumbnails.forEach(thumb => {
+      thumb.addEventListener('click', () => {
+        thumbnails.forEach(t => t.classList.remove('active'));
+        thumb.classList.add('active');
+        const indexStr = thumb.getAttribute('data-index');
+        const index = indexStr ? parseInt(indexStr, 10) : 0;
+        if (index >= 0 && index < imageUrls.length) {
+          mainImage.src = imageUrls[index];
+        }
+      });
+    });
+  }
+  
+  private handleOrder(product: Card) {
+    console.log(`Ordering product ${product.id}`);
+    alert(`Че, ебу дал?! не готово еще! sudo docker compose down -v епта бля`);
+  }
+
+  isProduct(card: Card): boolean {
     return 'price' in card;
   }
 
@@ -40,26 +128,26 @@ export class CardProcessor {
     const mainImageId = item.imagesIds[0];
     const imageUrl = this.api.getImageUrl(mainImageId);
 
-    let redirectPath : string;
+    let redirectPath: string;
     
     if (this.isProduct(item)) {
-      redirectPath = `/products/${item.id}`
+      redirectPath = `/products/${item.id}`;
     } else {
-      redirectPath = `/categories/${item.id}`
+      redirectPath = `/categories/${item.id}`;
     }
 
     cardElement.addEventListener('click', () => {
       window.location.href = redirectPath;
-    })
+    });
 
     const priceHtml = 'price' in item 
       ? `<div class="card-price">${item.price} ₽</div>` 
       : '';
 
     const availabilityHtml = 'availability' in item
-      ? `<div class="card-availability ${item.availability ? 'in-stock' : 'out-of-stock'}">
-           ${item.availability ? 'В наличии' : 'Нет в наличии'}
-         </div>`
+      ? `<div class="availability ${item.availability && item.availability > 0 ? 'in-stock' : 'out-of-stock'}">
+          ${item.availability && item.availability > 0 ? ('В наличии ' + item.availability) : 'Нет в наличии'}
+        </div>`
       : '';
 
     cardElement.innerHTML = `

@@ -1,5 +1,7 @@
 import '../../frontend/styles/base.css';
 import '../../frontend/components/card.css';
+import '../../frontend/components/product.css';
+
 
 import { CardProcessor } from '../components/CardProcessor';
 import { ApiService } from '../services/ApiService';
@@ -17,16 +19,36 @@ async function drawProducts(categoryId: number) {
   container.className = 'cards-grid';
 
   try {
-    const categories = await api.getProducts(categoryId);
+    const products = await api.getProducts(categoryId);
     const processor = new CardProcessor(api);
-    await processor.drawCards(categories, container);
+    await processor.drawCards(products, container);
     document.body.appendChild(container);
   } catch (error) {
     container.innerHTML = `
       <div class="error-message">
-        Не удалось загрузить категории. Пожалуйста, попробуйте позже.
+        Не удалось загрузить товары. Пожалуйста, попробуйте позже.
       </div>
     `;
+  }
+}
+
+async function drawProduct(productId: number) {
+  const api = new ApiService();
+  const container = document.createElement('div');
+  container.className = 'product-container';
+
+  try {
+    const product = await api.getProduct(productId);
+    const processor = new CardProcessor(api);
+    await processor.drawProduct(product, container);
+    document.body.appendChild(container);
+  } catch (error) {
+    container.innerHTML = `
+      <div class="error-message">
+        Не удалось загрузить товар. Пожалуйста, попробуйте позже.
+      </div>
+    `;
+    document.body.appendChild(container);
   }
 }
 
@@ -51,7 +73,7 @@ function productsController(pathParts : string[]) {
 
   const id = Number(strId);
 
-  drawProducts(id);
+  drawProduct(id);
 }
 
 function setPath(path : string) {
@@ -78,8 +100,6 @@ function initApp() {
   } else {
     setPath("/categories")
   }
-
-  // if (isRouted) setPath("/categories")
 }
 
 document.addEventListener('DOMContentLoaded', initApp);

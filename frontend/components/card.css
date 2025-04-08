@@ -50,17 +50,24 @@
   font-weight: bold;
 }
 
-.card-availability {
-  padding: 0 12px 12px;
-  text-align: center;
-  font-size: 0.8em;
+.availability {
+  margin-left: 0.7rem;
+  margin-right: 0.7rem;
+  margin-bottom: 0.7rem;
+  margin-top: 1rem;
+
+  font-size: 0.9rem;
+  padding: 0.5rem;
+  border-radius: 6px;
 }
 
-.card-availability.in-stock {
+.availability.in-stock {
+  background: rgba(142, 232, 145, 0.2);
   color: #8ee891;
 }
 
-.card-availability.out-of-stock {
+.availability.out-of-stock {
+  background: rgba(249, 146, 139, 0.2);
   color: #f9928b;
 }
 

@@ -4,6 +4,6 @@ export interface Card {
   imagesIds: number[];
 
   description ?: string;
-  price ?: number[];
+  price ?: number;
   availability ?: number;
 }
