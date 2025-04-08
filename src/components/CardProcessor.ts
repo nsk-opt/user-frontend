@@ -145,7 +145,7 @@ export class CardProcessor {
       : '';
 
     const availabilityHtml = 'availability' in item
-      ? `<div class="availability ${item.availability && item.availability > 0 ? 'in-stock' : 'out-of-stock'}">
+      ? `<div class="card-availability ${item.availability && item.availability > 0 ? 'in-stock' : 'out-of-stock'}">
           ${item.availability && item.availability > 0 ? ('В наличии ' + item.availability) : 'Нет в наличии'}
         </div>`
       : '';
