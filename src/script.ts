@@ -1,35 +1,36 @@
-import "../frontend/styles.css"
-import "../frontend/category.css"
+// src/script.ts
+import '../frontend/styles/base.css';
+import { ApiService } from './services/apiService';
+import { CategoryCard } from './components/CategoryCard';
 
-import { Category } from "./misc/types";
-import { handleError } from "./misc/errorHandler";
-import { createCategoryCard } from "./misc/createCategoryCard";
-import { fetchCategories } from "./fetches/categoryController";
+async function initApp() {
+  const api = new ApiService();
+  const container = document.createElement('div');
+  container.className = 'categories-grid';
+  document.body.appendChild(container);
 
-const contentId = "content";
-const content = document.getElementById(contentId) as HTMLElement;
-
-function renderCategories(categories: Category[]): void {
-  if (content == null) throw new Error("Error render categories.");
-
-  categories.forEach((category: Category) => {
-    const card: HTMLElement = createCategoryCard(category);
-    card.addEventListener("click", () => renderProducts(category));
-    content.appendChild(card);
-  });
-}
-
-function renderProducts(category: Category): void {
-  content.innerHTML = "selected: " + category.name;
-}
-
-async function main() {
   try {
-    const categories: Category[] = await fetchCategories();
-    renderCategories(categories);
+    container.innerHTML = '<div class="loading-spinner"></div>';
+
+    const categories = await api.getCategories();
+    
+    const cardPromises = categories.map(async category => {
+      const card = new CategoryCard(api);
+      return card.render(category);
+    });
+
+    const cards = await Promise.all(cardPromises);
+    container.innerHTML = '';
+    cards.forEach(card => container.appendChild(card));
+
   } catch (error) {
-    handleError(error as Error, contentId);
+    console.error('Error:', error);
+    container.innerHTML = `
+      <div class="error-message">
+        Ошибка загрузки данных. Пожалуйста, попробуйте позже.
+      </div>
+    `;
   }
 }
 
-main();
+document.addEventListener('DOMContentLoaded', initApp);
