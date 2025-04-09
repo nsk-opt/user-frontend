@@ -20,7 +20,7 @@ export class ApiService {
       return data.map((item: any) => ({
         id: Number(item.id),
         name: String(item.name),
-        imagesIds:item.images.map((img: any) => Number(img))
+        imagesIds:item.imagesIds.map((img: any) => Number(img))
       }));
     } catch (error) {
       console.error('Error fetching categories:', error);
