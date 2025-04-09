@@ -88,9 +88,3 @@
     grid-template-columns: repeat(2, 1fr);
   }
 }
-
-@supports (-webkit-touch-callout: none) {
-  .card {
-    -webkit-backdrop-filter: blur(10px);
-  }
-}

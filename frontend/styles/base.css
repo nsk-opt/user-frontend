@@ -14,9 +14,11 @@ body {
   color: var(--text);
   margin: 0;
   padding: 0;
-  min-height: 100vh;
-  padding-bottom: var(--safe-area-inset-bottom);
-  -webkit-tap-highlight-color: transparent;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
 }
 
 .loader-container {
@@ -43,8 +45,17 @@ body {
 .error-message {
   padding: 2rem;
   text-align: center;
-  color: #ff5555;
+  color: rgb(255, 85, 85);
   background: rgba(255, 85, 85, 0.1);
+  border-radius: 8px;
+  margin: 1rem;
+}
+
+.successful-message {
+  padding: 2rem;
+  text-align: center;
+  color: rgb(85, 255, 85);
+  background: rgb(85, 255, 85, 0.1);
   border-radius: 8px;
   margin: 1rem;
 }

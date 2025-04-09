@@ -1,4 +1,7 @@
 import { Card } from "../types/Card";
+import { FormData } from "../types/AuthFormData";
+import "../utils/JwtUtils";
+import { updateJwt } from "../utils/JwtUtils";
 
 export class ApiService {
   private baseUrl: string;
@@ -75,6 +78,47 @@ export class ApiService {
       console.error('Error fetching product:', error);
       throw new Error('Could not load product. Please try again later.');
     }
+  }
+
+  async registerUser(data: FormData): Promise<boolean> {
+    const response = await fetch(`${this.baseUrl}/auth/register`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data)
+    });
+  
+  
+    if (response.status === 201) {
+      return true;
+    }
+
+    const responseData = await response.json();
+    
+    const errorMessage = responseData.error 
+      || `Ошибка регистрации (код ${response.status})`;
+      
+    throw new Error(errorMessage);
+  }
+
+  async authUser(data: FormData) {
+    const response = await fetch(`${this.baseUrl}/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data)
+    });
+
+    const responseData = await response.json();
+
+    if (response.status !== 200) {
+      throw new Error(responseData.error || 'Ошибка авторизации, проверьте корректность введенных данных');
+    }
+
+    const jwt = String(responseData.accessToken);
+    updateJwt(jwt);
   }
 
   getImageUrl(id: number): string {
