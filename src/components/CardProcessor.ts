@@ -13,11 +13,10 @@ export class CardProcessor {
       document.body.innerHTML = ``;
       container.innerHTML = '';
       
-      const cardPromises = items.map(async item => {
+      const cards = items.map(item => {
         return this.renderCard(item);
       });
 
-      const cards = await Promise.all(cardPromises);
       cards.forEach(card => container.appendChild(card));
     } catch (error) {
       console.error('Error:', error);
@@ -121,7 +120,7 @@ export class CardProcessor {
     return 'price' in card;
   }
 
-  async renderCard(item: Card): Promise<HTMLElement> {
+  renderCard(item: Card): HTMLElement {
     const cardElement = document.createElement('div');
     cardElement.className = 'card';
 

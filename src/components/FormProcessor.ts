@@ -45,6 +45,52 @@ export class FormProcessor {
     }
   }
 
+  async drawNewCategoryForm(container: HTMLDivElement): Promise<void> {
+    try {
+      container.innerHTML = '';
+      this.formContainer.innerHTML = '';
+      
+      const formElement = await this.renderNewCategoryForm();
+      this.formContainer.appendChild(formElement);
+      container.appendChild(this.formContainer);
+      
+
+      //todo
+      // this.setupLoginFormHandlers();
+    } catch (error) {
+      console.error('Error:', error);
+      this.showError(container, 'Ошибка загрузки формы. Пожалуйста, попробуйте позже.');
+    }
+  }
+
+
+  private async renderNewCategoryForm(): Promise<HTMLElement> {
+    const form = document.createElement('div');
+    form.className = 'form-container';
+    
+    form.innerHTML = `
+      <h1 class="form-title">Создание категории</h1>
+      <div id="form-error" class="error-message" style="display: none;"></div>
+      <div id="form-successful" class="successful-message" style="display: none;"></div>
+
+      
+      <form id="new-category-form">
+        <div class="form-group">
+          <label for="title">Название</label>
+          <input 
+            type="text" 
+            id="title" 
+            required
+          >
+        </div>
+
+        <button type="submit" class="submit-btn">Создать</button>
+      </form>
+    `;
+  
+    return form;
+  }
+
   private async renderRegisterForm(): Promise<HTMLElement> {
     const form = document.createElement('div');
     form.className = 'form-container';

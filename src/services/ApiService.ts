@@ -1,7 +1,7 @@
-import { Card } from "../types/Card";
+import { Card, CardAdmin } from "../types/Card";
 import { FormData } from "../types/AuthFormData";
 import "../utils/JwtUtils";
-import { updateJwt } from "../utils/JwtUtils";
+import { getJwt, updateJwt } from "../utils/JwtUtils";
 
 export class ApiService {
   private baseUrl: string;
@@ -24,6 +24,60 @@ export class ApiService {
         id: Number(item.id),
         name: String(item.name),
         imagesIds:item.imagesIds.map((img: any) => Number(img))
+      }));
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+      throw new Error('Could not load categories. Please try again later.');
+    }
+  }
+
+  async getCategoriesAdmin(): Promise<CardAdmin[]> {
+    try {
+      const response = await fetch(`${this.baseUrl}/categories`, {
+        headers: {
+          'Authorization': `Bearer ${getJwt()}`,
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      return data.map((item: any) => ({
+        id: Number(item.id),
+        name: String(item.name),
+        imagesIds:item.imagesIds.map((img: any) => Number(img))
+      }));
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+      throw new Error('Could not load categories. Please try again later.');
+    }
+  }
+
+  async getProductsAdmin(): Promise<CardAdmin[]> {
+    try {
+      const response = await fetch(`${this.baseUrl}/products`, {
+        headers: {
+          'Authorization': `Bearer ${getJwt()}`,
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      return data.map((item: any) => ({
+        id: Number(item.id),
+        name: String(item.name),
+        imagesIds: item.imagesIds.map((img: any) => Number(img)),
+        wholesalePrice: Number(item.cost.wholesalePrice),
+        retailPrice: Number(item.cost.retailPrice),
+        availability: Number(item.availability),
+        description: String(item.description || '')
       }));
     } catch (error) {
       console.error('Error fetching categories:', error);
@@ -122,6 +176,6 @@ export class ApiService {
   }
 
   getImageUrl(id: number): string {
-    return `${this.baseUrl}/images/${id}`;
+    return id <= 0 ? "/favicon.ico" : `${this.baseUrl}/images/${id}`;
   }
 }

@@ -6,8 +6,12 @@ module.exports = {
     login: './src/pages/auth/Login.ts',
     register: './src/pages/auth/Register.ts',
     categories: './src/pages/Categories.ts',
+    adminCategories: './src/pages/admin/categories/AdminCategories.ts',
+    adminCategoriesNew: './src/pages/admin/categories/AdminCategoriesNew.ts',
+
+
     products: './src/pages/Products.ts',
-    admin: './src/pages/Admin.ts',
+    admin: './src/pages/admin/Admin.ts',
   },
 
   output: {
