@@ -59,9 +59,6 @@ async function initApp() {
 
   const strId = pathParts[pathParts.length - 1];
 
-  console.log(pathParts);
-  
-
   if (isInteger(strId) && strId !== "") {
     drawProducts(Number(strId));
   } else {

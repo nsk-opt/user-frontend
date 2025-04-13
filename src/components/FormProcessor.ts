@@ -2,6 +2,7 @@ import '../../frontend/components/form.css';
 
 import { ApiService } from "../services/ApiService";
 import { FormData } from '../types/AuthFormData';
+import { CardAdmin } from '../types/Card';
 
 export class FormProcessor {
   private api: ApiService;
@@ -45,18 +46,16 @@ export class FormProcessor {
     }
   }
 
-  async drawNewCategoryForm(container: HTMLDivElement): Promise<void> {
+  async drawCategoryForm(container: HTMLDivElement, category: CardAdmin): Promise<void> {
     try {
       container.innerHTML = '';
       this.formContainer.innerHTML = '';
       
-      const formElement = await this.renderNewCategoryForm();
+      const formElement = await this.renderCategoryForm(category);
       this.formContainer.appendChild(formElement);
       container.appendChild(this.formContainer);
       
-
-      //todo
-      // this.setupLoginFormHandlers();
+      this.setupCategoryFormHandlers();
     } catch (error) {
       console.error('Error:', error);
       this.showError(container, 'Ошибка загрузки формы. Пожалуйста, попробуйте позже.');
@@ -64,30 +63,48 @@ export class FormProcessor {
   }
 
 
-  private async renderNewCategoryForm(): Promise<HTMLElement> {
+  private async renderCategoryForm(category: CardAdmin): Promise<HTMLElement> {
     const form = document.createElement('div');
     form.className = 'form-container';
     
-    form.innerHTML = `
-      <h1 class="form-title">Создание категории</h1>
+    let formHtml = `
+      <h1 class="form-title">Настройка категории</h1>
       <div id="form-error" class="error-message" style="display: none;"></div>
       <div id="form-successful" class="successful-message" style="display: none;"></div>
 
-      
-      <form id="new-category-form">
+      <input type="hidden" id="category-id" value="${category.id || ''}">
+
+      <form id="category-form">
         <div class="form-group">
           <label for="title">Название</label>
           <input 
             type="text" 
-            id="title" 
+            id="title"
+            value="${category.name || ''}"  
             required
           >
         </div>
 
-        <button type="submit" class="submit-btn">Создать</button>
+        <div class="form-group">
+          <label for="image">Выберите фотографию</label>
+          <input 
+            type="file" 
+            id="image" 
+            accept="image/*" 
+          >
+        </div>
+
+        <button type="submit" class="submit-btn">Сохранить</button>
+        <button type="delete" class="delete-btn">Удалить</button>
       </form>
     `;
-  
+
+    if (category.id === -1) {
+      formHtml.replace(`<button type="delete" class="delete-btn">Удалить</button>`, "");
+    }
+
+    form.innerHTML = formHtml;
+
     return form;
   }
 
@@ -204,7 +221,7 @@ export class FormProcessor {
       errorElement.style.display = 'none';
       this.clearFormMessages();
 
-      const formData = this.getFormData();
+      const formData = this.getAuthFormData();
       
       try {
         await this.api.authUser(formData)
@@ -215,6 +232,60 @@ export class FormProcessor {
       }
     });
   }
+
+  private setupCategoryFormHandlers(): void {
+    const form = this.formContainer.querySelector('#category-form') as HTMLFormElement;
+    const errorElement = this.formContainer.querySelector('#form-error') as HTMLDivElement;
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorElement.style.display = 'none';
+      this.clearFormMessages();
+
+
+      try {
+          let categoryData = this.getCategoryFormData();
+
+          if (categoryData.id === -1) {
+            categoryData.id = await this.api.createCategory(categoryData.name);
+          }
+
+          var imageId: number = -1;
+
+          if (categoryData.image) {
+              imageId = await this.api.createImage(categoryData.image);
+          }
+
+          await this.api.updateCategory(categoryData.id, categoryData.name, [imageId]);
+          this.showFormSuccessful((imageId != -1 ? "Изображение и " : "") + "Название категории было обновлено");
+      } catch (error) {
+        this.showFormError(this.getErrorMessage(error));
+        errorElement.style.display = 'block';
+      }
+    });
+
+    const deleteBtn = form.querySelector('.delete-btn');
+    if (!deleteBtn) {
+      throw new Error('Delete button not found in the form!');
+    }
+    deleteBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      errorElement.style.display = 'none';
+      this.clearFormMessages();
+
+      try {
+        const categoryData = this.getCategoryFormData();
+
+        await this.api.deleteCategory(categoryData.id);
+
+        this.showFormSuccessful("Категория и ее продукты были удалены");
+      } catch (error) {
+        this.showFormError(this.getErrorMessage(error));
+        errorElement.style.display = 'block';
+      }
+    });
+  }
+
 
   private setupRegisterFormHandlers(): void {
     const form = this.formContainer.querySelector('#register-form') as HTMLFormElement;
@@ -230,7 +301,7 @@ export class FormProcessor {
         return;
       }
 
-      const formData = this.getFormData();
+      const formData = this.getAuthFormData();
       
       try {
         await this.api.registerUser(formData)
@@ -250,12 +321,25 @@ export class FormProcessor {
     return password === confirmPassword;
   }
 
-  private getFormData(): FormData {
+  private getAuthFormData(): FormData {
     return {
       username: (this.formContainer.querySelector('#username') as HTMLInputElement).value,
       password: (this.formContainer.querySelector('#password') as HTMLInputElement).value
     };
   }
+
+  private getCategoryFormData(): { id: number; name: string; image: File | null } {
+    const id = Number((this.formContainer.querySelector('#category-id') as HTMLInputElement).value);
+    const name = (this.formContainer.querySelector('#title') as HTMLInputElement).value;
+    const image = (this.formContainer.querySelector('#image') as HTMLInputElement).files?.[0] || null;
+
+    return {
+        id: id,
+        name: name,
+        image: image
+    };
+  }
+
 
   private showFormError(message: string): void {
     const errorElement = this.formContainer.querySelector('#form-error') as HTMLDivElement;

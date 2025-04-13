@@ -47,7 +47,6 @@ export class AdminProcessor {
         imagesIds: [-1]
       }
 
-
       categories.unshift(createNewCategoryCard);
 
       const cards = categories.map(item => {
@@ -74,19 +73,6 @@ export class AdminProcessor {
     var handler : () => void = () => {
       window.location.pathname = "/admin/categories/" + item.id;
     };
-
-    if (item.id === -1) {
-      buttonTitle = "Создать";
-      handler = () => {
-        window.location.pathname = "/admin/categories/new";
-      };
-    } else if (item.id === -2) {
-      buttonTitle = "Удалить";
-      handler = () => {
-        // TODO
-        // window.location.pathname = "/admin/categories/new";
-      };
-    }
 
     const mainImageId = item.imagesIds[0];
     const imageUrl = this.api.getImageUrl(mainImageId);

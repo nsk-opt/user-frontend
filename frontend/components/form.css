@@ -47,9 +47,24 @@ input:focus {
 }
 
 .submit-btn {
+  margin-top: 1em;
   width: 100%;
   padding: 12px;
   background: var(--primary);
+  color: var(--darker-bg);
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.delete-btn {
+  margin-top: 1em;
+  width: 100%;
+  padding: 12px;
+  background: rgb(255, 85, 85);
   color: var(--darker-bg);
   border: none;
   border-radius: 6px;

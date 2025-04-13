@@ -56,6 +56,142 @@ export class ApiService {
     }
   }
 
+  async getCategoryAdmin(id: number): Promise<CardAdmin> {
+    try {
+      const response = await fetch(`${this.baseUrl}/categories/${id}`, {
+        headers: {
+          'Authorization': `Bearer ${getJwt()}`,
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      return {
+        id: Number(data.id),
+        name: String(data.name),
+        imagesIds: data.imagesIds.map((img: any) => Number(img))
+      };
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+      throw new Error('Could not load categories. Please try again later.');
+    }
+  }
+
+  async createImage(file: File): Promise<number> {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+        const response = await fetch(`${this.baseUrl}/images`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${getJwt()}`,
+            },
+            body: formData
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        return Number(data);
+    } catch (error) {
+        console.error('Error uploading image:', error);
+        throw new Error('Could not upload image. Please try again later.');
+    }
+  }
+
+  async createCategory(name: string): Promise<number> {
+    try {
+        const response = await fetch(`${this.baseUrl}/categories`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${getJwt()}`,
+                'Content-Type': 'application/json'
+            },
+
+            body: JSON.stringify({"name" : name})
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        return Number(data.id);
+    } catch (error) {
+        console.error('Error uploading image:', error);
+        throw new Error('Could not upload image. Please try again later.');
+    }
+  }
+
+  private async updateCategoryImage(categoryId: number, imagesIds: number[]): Promise<void> {
+    const response = await fetch(`${this.baseUrl}/categories/${categoryId}/images`, {
+        method: 'PUT',
+        headers: {
+            'Authorization': `Bearer ${getJwt()}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(imagesIds)
+    });
+  
+    if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+  }
+
+
+  async updateCategory(categoryId: number, name: string, imagesIds: number[]) {
+    try {
+      if (imagesIds[0] != -1)
+        this.updateCategoryImage(categoryId, imagesIds);
+      
+      const response = await fetch(`${this.baseUrl}/categories/${categoryId}`, {
+          method: 'PUT',
+          headers: {
+              'Authorization': `Bearer ${getJwt()}`,
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({"name": name})
+      });
+
+      if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+    } catch (error) {
+      console.error('Error updating category images:', error);
+      throw new Error('Could not update category images. Please try again later.');
+    }
+  }
+
+  async deleteCategory(categoryId: number) {
+    try {
+      const response = await fetch(`${this.baseUrl}/categories/${categoryId}`, {
+          method: 'DELETE',
+          headers: {
+              'Authorization': `Bearer ${getJwt()}`,
+          }
+      });
+
+      if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      console.log("delete category: " + categoryId);
+
+    } catch (error) {
+      console.error('Error delete category:', error);
+      throw new Error('Could not delete category. Please try again later.');
+    }
+  }
+
+
   async getProductsAdmin(): Promise<CardAdmin[]> {
     try {
       const response = await fetch(`${this.baseUrl}/products`, {
@@ -84,6 +220,7 @@ export class ApiService {
       throw new Error('Could not load categories. Please try again later.');
     }
   }
+  
 
   async getProducts(categoryId: number): Promise<Card[]> {
     try {
